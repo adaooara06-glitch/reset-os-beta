@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#11130f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>RESET</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <span class="eyebrow">RESET OS · BETA</span>
+        <div class="top-actions">
+          <button class="quiet-button" id="thoughtButton" type="button">فكرة</button>
+          <button class="quiet-button" id="nightButton" type="button">بكرا</button>
+          <button class="quiet-button" id="reviewButton" type="button">مراجعة</button>
+          <button class="quiet-button" id="settingsButton" type="button">إعدادات</button>
+          <button class="quiet-button" id="resetButton" type="button">RESET</button>
+        </div>
+      </header>
+
+      <section id="wakeView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">عودة بعد انقطاع طويل</p>
+        <h1>بداية جديدة.</h1>
+        <p class="lead">لا تدخل في اليوم دفعة واحدة. خذ أول 10 دقائق بعيداً عن المشتتات.</p>
+        <button class="primary-button" id="startWakeButton" type="button">ابدأ 10 دقائق</button>
+      </section>
+
+      <section id="homeView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">الآن</p>
+        <h1>ما الخطوة التالية؟</h1>
+        <p class="lead">اختَر شيئاً يمكن أن يتحرك خلال 25 دقيقة.</p>
+        <label class="field-label" for="taskInput">مهمة واحدة</label>
+        <input id="taskInput" maxlength="90" placeholder="مثال: أكتب مخطط أول شاشة" autocomplete="off" />
+        <button class="primary-button" id="startFocusButton" type="button">ابدأ Focus Lock · 25 دقيقة</button>
+        <div class="plan-preview" id="planPreview"></div>
+        <p class="note">في النسخة الأصلية سيُحجب Instagram وTikTok وYouTube هنا.</p>
+      </section>
+
+      <section id="focusView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">FOCUS LOCK</p>
+        <h1 id="focusTask">مهمتك</h1>
+        <p class="timer" id="timer">25:00</p>
+        <p class="lead">مو هلق. ارجع للشيء الذي اخترته.</p>
+        <button class="secondary-button" id="finishFocusButton" type="button">أنهيت الجلسة</button>
+      </section>
+
+      <section id="completeView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">انتهت الجلسة</p>
+        <h1>شو تحرّك؟</h1>
+        <textarea id="resultInput" rows="4" maxlength="280" placeholder="سطر واحد فقط، حتى لو كانت البداية صغيرة."></textarea>
+        <p class="field-label status-label">حالة المهمة الآن</p>
+        <div class="chips" id="statusChips">
+          <button type="button" data-status="تحرّكت">تحرّكت</button>
+          <button type="button" data-status="خلصت">خلصت</button>
+        </div>
+        <button class="primary-button" id="saveResultButton" type="button">سجّل وارجع</button>
+      </section>
+
+      <section id="resetView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">RESET</p>
+        <h1>اليوم لسا موجود.</h1>
+        <p class="lead">ما الذي صار؟ اختر كلمة، ثم ارجع للخطوة التالية.</p>
+        <div class="chips" id="reasonChips">
+          <button type="button" data-reason="ملل">ملل</button>
+          <button type="button" data-reason="غموض">غموض</button>
+          <button type="button" data-reason="تعب">تعب</button>
+          <button type="button" data-reason="خوف">خوف</button>
+        </div>
+        <button class="primary-button" id="continueAfterResetButton" type="button">حدد الخطوة التالية</button>
+      </section>
+
+      <section id="thoughtView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">THOUGHT INBOX</p>
+        <h1>شو عم تفكر؟</h1>
+        <p class="lead">سجّلها كما هي. لا ترتّبها الآن.</p>
+        <textarea id="thoughtInput" rows="6" maxlength="500" placeholder="الفكرة، القلق، أو الشيء الذي لا تريد أن تنساه…"></textarea>
+        <button class="primary-button" id="saveThoughtButton" type="button">احفظ وارجع</button>
+      </section>
+
+      <section id="nightView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">NIGHT SETUP</p>
+        <h1>جهّز بكرا.</h1>
+        <p class="lead">ثلاثة أشياء كحد أقصى. اكتب أول خطوة حقيقية للأهم.</p>
+        <label class="field-label" for="priorityOne">1 — الأهم + أول خطوة</label>
+        <input id="priorityOne" maxlength="120" placeholder="مثال: أبدأ هيكل التطبيق لمدة 25 دقيقة" />
+        <label class="field-label" for="priorityOneTime">ذكّرني بها</label>
+        <input id="priorityOneTime" type="time" />
+        <label class="field-label" for="priorityTwo">2 — مهم</label>
+        <input id="priorityTwo" maxlength="120" placeholder="اختياري" />
+        <label class="field-label" for="priorityTwoTime">ذكّرني بها</label>
+        <input id="priorityTwoTime" type="time" />
+        <label class="field-label" for="priorityThree">3 — إن بقي وقت</label>
+        <input id="priorityThree" maxlength="120" placeholder="اختياري" />
+        <label class="field-label" for="priorityThreeTime">ذكّرني بها</label>
+        <input id="priorityThreeTime" type="time" />
+        <button class="primary-button" id="saveNightButton" type="button">جهّزت بكرا</button>
+      </section>
+
+      <section id="reviewView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">REVIEW</p>
+        <h1>شو تحرّك؟</h1>
+        <div class="review-card" id="reviewStats"></div>
+        <div class="review-card" id="reviewTasks"></div>
+      </section>
+
+      <section id="settingsView" class="view hidden" aria-live="polite">
+        <p class="eyebrow">SETTINGS</p>
+        <h1>إنت بتقرر.</h1>
+        <p class="lead">عدّل أي قاعدة. التطبيق لا يغيّر شيئاً وحده.</p>
+        <label class="field-label" for="focusMinutes">مدة Focus الافتراضية بالدقائق</label>
+        <input id="focusMinutes" type="number" min="5" max="180" inputmode="numeric" />
+        <label class="field-label" for="wakeHours">Wake Reset بعد كم ساعة؟</label>
+        <input id="wakeHours" type="number" min="1" max="24" inputmode="numeric" />
+        <label class="field-label" for="nightReminderTime">وقت إشعار تجهيز الغد</label>
+        <input id="nightReminderTime" type="time" />
+        <label class="field-label" for="distractions">التطبيقات المشتتة</label>
+        <input id="distractions" maxlength="180" placeholder="Instagram، TikTok، YouTube" />
+        <button class="primary-button" id="saveSettingsButton" type="button">احفظ الإعدادات</button>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

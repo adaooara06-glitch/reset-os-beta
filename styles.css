@@ -1,0 +1,43 @@
+:root {
+  color-scheme: dark;
+  --bg: #11130f;
+  --surface: #1d211b;
+  --text: #f4f1e9;
+  --muted: #b7b9ac;
+  --accent: #d9ff6b;
+  --line: #363b32;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: radial-gradient(circle at 80% 0%, #2c3a1e 0, transparent 36%), var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+}
+.app-shell { min-height: 100dvh; max-width: 540px; margin: auto; padding: max(24px, env(safe-area-inset-top)) 24px max(32px, env(safe-area-inset-bottom)); }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.top-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
+.eyebrow { margin: 0; color: var(--accent); font-size: .72rem; font-weight: 700; letter-spacing: .1em; }
+.quiet-button, .secondary-button, .chips button { border: 1px solid var(--line); background: transparent; color: var(--text); border-radius: 14px; padding: 11px 14px; font: inherit; }
+.quiet-button { color: var(--muted); font-size: .75rem; padding: 8px 9px; }
+.view { padding-top: 22vh; }
+.view.hidden { display: none; }
+h1 { margin: 12px 0; font-size: clamp(2.25rem, 11vw, 3.5rem); letter-spacing: -.055em; line-height: 1.02; }
+.lead { color: var(--muted); font-size: 1.05rem; line-height: 1.65; margin: 0 0 30px; }
+.field-label { display: block; margin-bottom: 8px; color: var(--muted); font-size: .9rem; }
+input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); padding: 16px; font: inherit; font-size: 1.05rem; outline: none; }
+input:focus, textarea:focus { border-color: var(--accent); }
+.primary-button { width: 100%; border: 0; border-radius: 16px; background: var(--accent); color: #172009; margin-top: 14px; padding: 17px; font: inherit; font-weight: 800; font-size: 1rem; }
+.note { margin: 14px 5px; color: var(--muted); font-size: .78rem; line-height: 1.5; }
+.plan-preview, .review-card { margin-top: 18px; padding: 14px; border: 1px solid var(--line); border-radius: 16px; color: var(--muted); line-height: 1.65; }
+.plan-preview strong, .review-card strong { color: var(--text); }
+.plan-preview ol { margin: 7px 0 0; padding-right: 21px; }
+.status-label { margin-top: 20px; }
+.field-label:not(:first-child) { margin-top: 17px; }
+.review-card + .review-card { margin-top: 10px; }
+.timer { font-variant-numeric: tabular-nums; font-size: clamp(4rem, 23vw, 7.5rem); letter-spacing: -.075em; margin: 32px 0 18px; direction: ltr; text-align: right; }
+.secondary-button { width: 100%; margin-top: 24px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button.selected { background: var(--accent); border-color: var(--accent); color: #172009; }
