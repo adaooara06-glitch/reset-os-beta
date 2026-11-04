@@ -9,9 +9,15 @@ let timerId;
 let selectedReason = "";
 let selectedStatus = "تحرّكت";
 let activeTaskId = null;
+let recognition = null;
+let dictationBase = "";
+let dictationLang = navigator.language?.toLowerCase().startsWith("ar") ? navigator.language : "ar-SA";
 
 const views = ["wakeView", "homeView", "focusView", "completeView", "resetView", "thoughtView", "nightView", "reviewView", "settingsView"];
-const show = (id) => views.forEach((view) => document.getElementById(view).classList.toggle("hidden", view !== id));
+const show = (id) => {
+  if (id !== "thoughtView") cancelDictation();
+  views.forEach((view) => document.getElementById(view).classList.toggle("hidden", view !== id));
+};
 const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 const stampInteraction = () => { state.lastInteractionAt = Date.now(); save(); };
 const byId = (id) => document.getElementById(id);
@@ -85,6 +91,72 @@ function saveNight() {
   show("homeView");
 }
 
+const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
+const THOUGHT_MAX_LENGTH = 500;
+const dictationErrors = {
+  "not-allowed": "اسمح للتطبيق يستخدم المايك من إعدادات المتصفح.",
+  "service-not-allowed": "الإملاء مش متاح هون. جرّب من المتصفح مباشرة، أو استخدم مايك الكيبورد.",
+  "no-speech": "ما سمعت شي. جرّب مرة تانية.",
+  "audio-capture": "ما لقيت مايك شغّال.",
+  network: "الإملاء بيحتاج إنترنت.",
+};
+
+function setDictationUi(listening, message = "") {
+  const button = byId("dictateButton");
+  button.classList.toggle("listening", listening);
+  button.setAttribute("aria-pressed", String(listening));
+  button.textContent = listening ? "وقّف التسجيل" : "احكِها بصوتك";
+  byId("dictationStatus").textContent = message;
+}
+
+function startDictation() {
+  if (!SpeechRecognitionApi) {
+    setDictationUi(false, "هالمتصفح ما بيدعم الإملاء الصوتي. جرّب Chrome أو Safari، أو مايك الكيبورد.");
+    return;
+  }
+  const input = byId("thoughtInput");
+  const session = new SpeechRecognitionApi();
+  let errorMessage = "";
+  let retryWithDefaultLang = false;
+  dictationBase = input.value.trimEnd();
+  session.lang = dictationLang;
+  session.continuous = true;
+  session.interimResults = true;
+  session.onresult = (event) => {
+    const spoken = Array.from(event.results, (result) => result[0].transcript).join(" ").replace(/\s+/g, " ").trim();
+    input.value = [dictationBase, spoken].filter(Boolean).join(" ").slice(0, THOUGHT_MAX_LENGTH);
+  };
+  session.onerror = (event) => {
+    if (event.error === "language-not-supported" && dictationLang !== "ar-SA") {
+      dictationLang = "ar-SA";
+      retryWithDefaultLang = true;
+      return;
+    }
+    if (event.error !== "aborted") errorMessage = dictationErrors[event.error] || "صار خطأ بالإملاء. جرّب مرة تانية.";
+  };
+  session.onend = () => {
+    recognition = null;
+    if (retryWithDefaultLang) { startDictation(); return; }
+    setDictationUi(false, errorMessage);
+  };
+  try {
+    session.start();
+    recognition = session;
+    setDictationUi(true, "عم أسمعك… احكِ، ولمّا تخلص اضغط «وقّف التسجيل».");
+  } catch {
+    setDictationUi(false, "ما قدرت أبلّش التسجيل. جرّب مرة تانية.");
+  }
+}
+
+function cancelDictation() {
+  if (!recognition) return;
+  const session = recognition;
+  recognition = null;
+  session.onresult = session.onerror = session.onend = null;
+  session.abort();
+  setDictationUi(false);
+}
+
 function renderReview() {
   const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const recent = state.sessions.filter((session) => session.completedAt >= cutoff);
@@ -98,7 +170,11 @@ byId("startFocusButton").addEventListener("click", startFocus);
 byId("startWakeButton").addEventListener("click", () => { stampInteraction(); byId("taskInput").value = state.plan[0]?.title || state.currentTask || ""; show("homeView"); });
 byId("finishFocusButton").addEventListener("click", finishFocus);
 byId("resetButton").addEventListener("click", () => { clearInterval(timerId); show("resetView"); });
-byId("thoughtButton").addEventListener("click", () => show("thoughtView"));
+byId("thoughtButton").addEventListener("click", () => {
+  if (!recognition) setDictationUi(false);
+  show("thoughtView");
+});
+byId("dictateButton").addEventListener("click", () => (recognition ? recognition.stop() : startDictation()));
 byId("nightButton").addEventListener("click", openNight);
 byId("reviewButton").addEventListener("click", () => { renderReview(); show("reviewView"); });
 byId("settingsButton").addEventListener("click", () => {
@@ -109,6 +185,7 @@ byId("settingsButton").addEventListener("click", () => {
   show("settingsView");
 });
 byId("saveThoughtButton").addEventListener("click", () => {
+  cancelDictation();
   const text = byId("thoughtInput").value.trim();
   if (!text) { byId("thoughtInput").focus(); return; }
   state.thoughts.unshift({ text, createdAt: Date.now() });

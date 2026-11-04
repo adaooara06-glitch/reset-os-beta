@@ -41,3 +41,10 @@ input:focus, textarea:focus { border-color: var(--accent); }
 .secondary-button { width: 100%; margin-top: 24px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips button.selected { background: var(--accent); border-color: var(--accent); color: #172009; }
+.mic-button { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 12px; }
+.mic-button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.mic-button.listening { border-color: var(--accent); color: var(--accent); }
+.mic-button.listening::before { background: var(--accent); animation: mic-pulse 1.2s ease-in-out infinite; }
+.dictation-status:empty { display: none; }
+@keyframes mic-pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .mic-button.listening::before { animation: none; } }
